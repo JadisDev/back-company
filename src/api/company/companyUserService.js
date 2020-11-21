@@ -1,24 +1,41 @@
 const User = require('../user/user');
-const Company = require('./companyUser')
+const companyUser = require('./companyUser')
+const tokenDecoded = require('../../config/tokenDecoded');
 
 const createCompany = (req, res, next) => {
 
     try {
-        User.findOne({ 'login': 'xx' }).then((user) => {
+        const loggedUser = tokenDecoded(req)
+
+        const cnpj = req.body.cnpj || null
+        const name = req.body.name || null
+        const lat = req.body.lat || null
+        const lng = req.body.lng || null
+
+        User.findOne({ 'login': loggedUser.login }).then((user) => {
             if (!user) return res.status(500).send({ errors: ['Usuário não encontrado'] })
+            companyUser.findOne({ cnpj }).then((company) => {
+                if (company) {
+                    return res.status(500).send({ errors: ['Essa empresa já esta cadastrada'] })
+                }
 
-            const newCompanyUser = new Company({
-                'name': 'teste',
-                'cnpj': '1231231231',
-                'lat': 1,
-                'lng': 2,
-                'user': user
+                const newCompanyUser = new companyUser({
+                    cnpj,
+                    name,
+                    lat,
+                    lng,
+                    'user': user
+                })
+    
+                newCompanyUser.save((e) => {
+                    if (e) return res.status(500).send({ errors: [e.message] })
+                    return res.status(200).send({ message: 'Cadastro empresa realizado' })
+                })
+
+            }).catch((e) => {
+                return res.status(500).send({ errors: ['Erro ao procurar empresa'] })
             })
 
-            newCompanyUser.save((e) => {
-                if (e) return res.status(500).send({ errors: [e.message] })
-                return res.status(200).send({ message: 'Cadastro empresa realizado' })
-            })
         })
     } catch (e) {
         return res.status(500).send({ errors: [e.message] })
@@ -28,9 +45,10 @@ const createCompany = (req, res, next) => {
 const getCompanyByUser = (req, res, next) => {
 
     try {
-        User.findOne({ 'login': 'xx' }).then((user) => {
+        const loggedUser = tokenDecoded(req)
+        User.findOne({ 'login': loggedUser.login }).then((user) => {
             if (!user) return res.status(500).send({ errors: ['Usuário não encontrado'] })
-            Company.find({'user': user}).then((company)=>{
+            companyUser.find({ 'user': user }).then((company) => {
                 return res.status(200).send({ data: company })
             }).catch((e) => {
                 return res.status(500).send({ errors: [e.message] })
@@ -41,4 +59,20 @@ const getCompanyByUser = (req, res, next) => {
     }
 }
 
-module.exports = {createCompany, getCompanyByUser}
+const removeCompany = (req, res, next) => {
+    try {
+
+        const loggedUser = tokenDecoded(req)
+        const cnpj = req.body.cnpj || null
+
+        companyUser.remove({'cnpj': cnpj, 'user': loggedUser}, function(e) {
+            if (e) return res.status(500).send({ errors: ['Empresa não encontrada para seu usuário'] })
+            return res.status(200).send({ data: 'Empresa deleta com sucesso' })
+        })
+
+    } catch (e) {
+        return res.status(500).send({ errors: [e.message] })
+    }
+}
+
+module.exports = { createCompany, getCompanyByUser, removeCompany }
