@@ -20,8 +20,11 @@
   },
   "homepage": "https://github.com/JadisDev/back-company#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "1.15.2",
     "express": "4.14.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "4.7.0",
     "node-restful": "0.2.5",
     "pm2": "2.1.5"
