@@ -7,6 +7,9 @@ module.exports = function(server) {
     const protectedApi = express.Router()
     server.use('/api', protectedApi)
     protectedApi.use(auth)
+    const CompanyUserService = require('../api/company/companyUserService')
+    protectedApi.post('/company', CompanyUserService.createCompany)
+    protectedApi.get('/company', CompanyUserService.getCompanyByUser)
 
     //rotas públicas
     const openApi = express.Router()
@@ -16,8 +19,4 @@ module.exports = function(server) {
     openApi.post('/login', AuthService.login)
     openApi.post('/signup', AuthService.signup)
     openApi.post('/validate-token', AuthService.validateToken)
-
-    const CompanyUserService = require('../api/company/companyUserService')
-    openApi.post('/company', CompanyUserService.createCompany)
-    openApi.get('/company', CompanyUserService.getCompanyByUser)
 }

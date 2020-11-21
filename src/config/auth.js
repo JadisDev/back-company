@@ -5,17 +5,23 @@ module.exports = function (req, res, next) {
     if (req.method === 'OPTIONS') {
         next()
     } else {
-        const token = req.body.token || req.query.token ||
-            req.headers['authorization']
+
+        var token = null;
+        if (req.headers['authorization']) {
+            let authorization = req.headers['authorization']
+            token = authorization.split('Bearer')[1]
+        } else {
+            token = req.body.token || req.query.token
+        }
 
         if (!token) {
             return res.status(403).send({ errors: ['No token provided.'] })
         }
 
-        jwt.verify(token, env.authSecret, function (err, decoded) {
+        jwt.verify(token.trim(), env.authSecret, function (err, decoded) {
             if (err) {
                 return res.status(403).send({
-                    errors: ['Failed to authenticate token.']
+                    errors: [err.message]
                 })
             } else {
                 // req.decoded = decoded
