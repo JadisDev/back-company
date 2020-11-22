@@ -39,19 +39,22 @@ const signup = (req, res, next) => {
     try {
 
         const name = req.body.name || ''
-        const login = req.body.login || ''
+        const loginUser = req.body.login || ''
         const password = req.body.password || ''
         const salt = bcrypt.genSaltSync()
         const passwordHash = bcrypt.hashSync(password, salt)
 
-        User.findOne({'login': login}).then((user) => {
+        User.findOne({'login': loginUser}).then((user) => {
             if (user) {
                 return res.status(400).send({ errors: ['Usuário já cadastrado.'] })
             } else {
-                const newUser = new User({ name, login, password: passwordHash })
+                const newUser = new User({ name, 'login': loginUser, password: passwordHash })
                 newUser.save((e) => {
-                    if (e) return res.status(500).send({ errors: [e.message] })
-                    return res.status(200).send({ message: 'Cadastro realizado' })
+                    if (e) {
+                        return res.status(500).send({ errors: [e.message] })
+                    } else {
+                        login(req, res, next)
+                    }
                 })
             }
         }).catch((e) => {
