@@ -63,11 +63,11 @@ const removeCompany = (req, res, next) => {
     try {
 
         const loggedUser = tokenDecoded(req)
-        const cnpj = req.body.cnpj || null
+        const {cnpj} = req.params;
 
-        companyUser.remove({'cnpj': cnpj, 'user': loggedUser}, function(e) {
-            if (e) return res.status(500).send({ errors: ['Empresa não encontrada para seu usuário'] })
-            return res.status(200).send({ data: 'Empresa deleta com sucesso' })
+        companyUser.remove({cnpj, 'user': loggedUser}, function(e) {
+            if (e) return res.status(500).send({ errors: [cnpj] })
+            return res.status(200).send({ data: cnpj })
         })
 
     } catch (e) {

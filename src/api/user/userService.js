@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const env = require('../../../.env')
+const env = require('../../.env')
 
 const User = require('./user');
 

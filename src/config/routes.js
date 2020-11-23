@@ -11,7 +11,7 @@ module.exports = function(server) {
     const CompanyUserService = require('../api/company/companyUserService')
     protectedApi.post('/company', CompanyUserService.createCompany)
     protectedApi.get('/company', CompanyUserService.getCompanyByUser)
-    protectedApi.delete('/company', CompanyUserService.removeCompany)
+    protectedApi.delete('/company/:cnpj', CompanyUserService.removeCompany)
 
     //rotas públicas
     const openApi = express.Router()
