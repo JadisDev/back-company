@@ -11,6 +11,7 @@ module.exports = function(server) {
     const CompanyUserService = require('../api/company/companyUserService')
     protectedApi.post('/company', CompanyUserService.createCompany)
     protectedApi.get('/company', CompanyUserService.getCompanyByUser)
+    protectedApi.get('/company/:cnpj', CompanyUserService.getCompanyByUserAndCNPJ)
     protectedApi.delete('/company/:cnpj', CompanyUserService.removeCompany)
 
     //rotas públicas

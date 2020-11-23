@@ -59,6 +59,25 @@ const getCompanyByUser = (req, res, next) => {
     }
 }
 
+const getCompanyByUserAndCNPJ = (req, res, next) => {
+
+    try {
+        const {cnpj} = req.params;
+        const loggedUser = tokenDecoded(req)
+        User.findOne({ 'login': loggedUser.login }).then((user) => {
+            if (!user) return res.status(500).send({ errors: ['Usuário não encontrado'] })
+            companyUser.findOne({ 'cnpj': cnpj, 'user': user }).then((company) => {
+                return res.status(200).send({ data: company })
+            }).catch((e) => {
+                return res.status(500).send({ errors: [e.message] })
+            })
+        })
+    } catch (e) {
+        return res.status(500).send({ errors: [e.message] })
+    }
+}
+
+
 const removeCompany = (req, res, next) => {
     try {
 
@@ -75,4 +94,4 @@ const removeCompany = (req, res, next) => {
     }
 }
 
-module.exports = { createCompany, getCompanyByUser, removeCompany }
+module.exports = { createCompany, getCompanyByUser, removeCompany, getCompanyByUserAndCNPJ }
