@@ -13,6 +13,7 @@ module.exports = function(server) {
     protectedApi.get('/company', CompanyUserService.getCompanyByUser)
     protectedApi.get('/company/:cnpj', CompanyUserService.getCompanyByUserAndCNPJ)
     protectedApi.delete('/company/:cnpj', CompanyUserService.removeCompany)
+    protectedApi.put('/company', CompanyUserService.updateCompany)
 
     //rotas públicas
     const openApi = express.Router()
